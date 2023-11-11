@@ -15,10 +15,11 @@ const app = {
   inputNuevaTarea: inputNuevaTarea,
 };
 
-function crearTarea(titulo, estaCompletada = false) {
+function crearTarea(titulo, descripcion = "", estaCompletada = false) {
   return {
     id: Date.now(),
     titulo,
+    descripcion,
     estaCompletada,
   };
 }
@@ -30,11 +31,25 @@ function agregarTareaALista(tarea, listaTareas) {
 
 function agregarTarea(app) {
   const nuevoTituloTarea = app.inputNuevaTarea.value;
-  const nuevaTarea = crearTarea(nuevoTituloTarea);
+  const nuevaDescripcionTarea = document.querySelector("#input-descripcion-tarea").value;
+
+  // Verificar que haya un título antes de agregar la tarea
+  if (nuevoTituloTarea.trim() === "") {
+    alert("Por favor, ingrese un título para la tarea.");
+    return;
+  }
+
+  const nuevaTarea = crearTarea(nuevoTituloTarea, nuevaDescripcionTarea);
 
   app.tareas.push(nuevaTarea);
   agregarTareaALista(nuevaTarea, app.listaTareas);
+
+  // Limpiar los campos después de agregar la tarea
+  app.inputNuevaTarea.value = "";
+  document.querySelector("#input-descripcion-tarea").value = "";
 }
+
+
 
 function crearElementoTarea(tarea) {
   const elementoTarea = document.createElement("li");
@@ -42,16 +57,17 @@ function crearElementoTarea(tarea) {
   const checkboxTarea = document.createElement("input");
   checkboxTarea.type = "checkbox";
   checkboxTarea.checked = tarea.estaCompletada;
+
+  const textoTarea = document.createElement("span");
+  actualizarTexto();
+
   checkboxTarea.addEventListener("change", () => {
     tarea.estaCompletada = checkboxTarea.checked;
     textoTarea.classList.toggle("completada", tarea.estaCompletada);
-    textoTarea.value.toggle("Completada", tarea.estaCompletada);
+    actualizarTexto();
   });
 
-  const textoTarea = document.createElement("span");
-  textoTarea.textContent = tarea.titulo;
-  textoTarea.classList.toggle("completada", tarea.estaCompletada);
-  botonBorrarTarea = document.createElement("button");
+  const botonBorrarTarea = document.createElement("button");
   botonBorrarTarea.textContent = "Eliminar";
   botonBorrarTarea.className = "boton-eliminar";
   botonBorrarTarea.addEventListener("click", () => {
@@ -62,14 +78,21 @@ function crearElementoTarea(tarea) {
     // Elimina el elemento de la lista de tareas en el DOM
     elementoTarea.remove();
   });
+
   const divCheckSpan = document.createElement("div");
   divCheckSpan.appendChild(checkboxTarea);
   divCheckSpan.appendChild(textoTarea);
   elementoTarea.appendChild(divCheckSpan);
   elementoTarea.appendChild(botonBorrarTarea);
 
+  function actualizarTexto() {
+    textoTarea.textContent = `${tarea.titulo} - ${tarea.descripcion}`;
+  }
+
   return elementoTarea;
 }
+
+
 botonAgregarTarea.addEventListener("click", () => {
   agregarTarea(app);
 });
