@@ -51,6 +51,17 @@ function crearElementoTarea(tarea) {
   const textoTarea = document.createElement("span");
   textoTarea.textContent = tarea.titulo;
   textoTarea.classList.toggle("completada", tarea.estaCompletada);
+
+  // Nueva funcionalidad: Editar título al hacer doble clic
+  textoTarea.addEventListener("dblclick", () => {
+    const nuevoTitulo = prompt("Introduce el nuevo título:");
+    if (nuevoTitulo !== null) {
+      tarea.titulo = nuevoTitulo;
+      // Actualiza el texto con el nuevo título
+      textoTarea.textContent = nuevoTitulo;
+    }
+  });
+
   botonBorrarTarea = document.createElement("button");
   botonBorrarTarea.textContent = "Eliminar";
   botonBorrarTarea.className = "boton-eliminar";
